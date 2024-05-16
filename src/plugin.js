@@ -241,14 +241,12 @@ class VR extends Plugin {
       let geometry = new THREE.SphereBufferGeometry(
         256,
         this.options_.sphereDetail,
-        this.options_.sphereDetail,
-        Math.PI,
-        Math.PI
+        this.options_.sphereDetail
       );
       let uvAttribute;
 
       // Left eye view
-      // geometry.scale(-1, 1, 1);
+      geometry.scale(-1, 1, 1);
 
       uvAttribute = geometry.getAttribute("uv");
       if (projection === '180_MONO') {
@@ -272,8 +270,6 @@ class VR extends Plugin {
       //   256,
       //   this.options_.sphereDetail,
       //   this.options_.sphereDetail,
-      //   Math.PI,
-      //   Math.PI
       // );
       // geometry.scale(-1, 1, 1);
        
