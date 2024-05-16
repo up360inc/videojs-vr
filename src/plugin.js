@@ -241,7 +241,7 @@ class VR extends Plugin {
       let geometry = new THREE.SphereBufferGeometry(
         256,
         this.options_.sphereDetail,
-        this.options_.sphereDetail
+        this.options_.sphereDetail,
       );
       let uvAttribute;
 
@@ -251,8 +251,10 @@ class VR extends Plugin {
       uvAttribute = geometry.getAttribute("uv");
       if (projection === '180_MONO') {
         for (let i = 0; i < uvAttribute.count; i++) {
-          uvAttribute.setX(i, uvAttribute.getX(i) * 0.5);
+          uvAttribute.setX(i, uvAttribute.getX(i) * 2);
         }
+
+        geometry.rotateY(Math.PI);
       }
 
       this.movieGeometry = geometry
@@ -262,31 +264,31 @@ class VR extends Plugin {
       });
       this.movieScreen = new THREE.Mesh(this.movieGeometry, this.movieMaterial);
       // display in left eye only
-      // this.movieScreen.layers.set(1);
+      this.movieScreen.layers.set(1);
       this.scene.add(this.movieScreen);
 
       // Right eye view
-      // geometry = new THREE.SphereBufferGeometry(
-      //   256,
-      //   this.options_.sphereDetail,
-      //   this.options_.sphereDetail,
-      // );
-      // geometry.scale(-1, 1, 1);
+      geometry = new THREE.SphereBufferGeometry(
+        256,
+        this.options_.sphereDetail,
+        this.options_.sphereDetail,
+      );
+      geometry.scale(-1, 1, 1);
        
-      // uvAttribute = geometry.getAttribute("uv");
-      // for (let i = 0; i < uvAttribute.count; i++) {
-      //   uvAttribute.setX(i, uvAttribute.getX(i) * 0.5 + 0.5);
-      // }
+      uvAttribute = geometry.getAttribute("uv");
+      for (let i = 0; i < uvAttribute.count; i++) {
+        uvAttribute.setX(i, uvAttribute.getX(i) * 0.5 + 0.5);
+      }
 
-      // this.movieGeometry = geometry
-      // this.movieMaterial = new THREE.MeshBasicMaterial({
-      //   map: this.videoTexture,
-      //   overdraw: true
-      // });
-      // this.movieScreen = new THREE.Mesh(this.movieGeometry, this.movieMaterial);
-      // // display in right eye only
-      // this.movieScreen.layers.set(2);
-      // this.scene.add(this.movieScreen);
+      this.movieGeometry = geometry
+      this.movieMaterial = new THREE.MeshBasicMaterial({
+        map: this.videoTexture,
+        overdraw: true
+      });
+      this.movieScreen = new THREE.Mesh(this.movieGeometry, this.movieMaterial);
+      // display in right eye only
+      this.movieScreen.layers.set(2);
+      this.scene.add(this.movieScreen);
     } else if (projection === 'EAC' || projection === 'EAC_LR') {
       const makeScreen = (mapMatrix, scaleMatrix) => {
         // "Continuity correction?": because of discontinuous faces and aliasing,
