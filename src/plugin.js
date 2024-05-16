@@ -262,7 +262,7 @@ class VR extends Plugin {
       });
       this.movieScreen = new THREE.Mesh(this.movieGeometry, this.movieMaterial);
       // display in left eye only
-      this.movieScreen.layers.set(1);
+      // this.movieScreen.layers.set(1);
       this.scene.add(this.movieScreen);
 
       // Right eye view
