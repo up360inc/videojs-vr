@@ -144,21 +144,25 @@ class VR extends Plugin {
         this.options_.sphereDetail,
         this.options_.sphereDetail
       );
+      const uvAttribute = geometry.getAttribute("uv");
+      const uvArray = uvAttribute.array;
+      
+      // Now we set the update flag to true so the GPU gets the new values
+      // uvAttribute.needsUpdate = true;
 
-      let uvs = geometry.faceVertexUvs[ 0 ];
+      // let uvs = geometry.faceVertexUvs[ 0 ];
+      // for (let i = 0; i < uvs.length; i++) {
+      //   for (let j = 0; j < 3; j++) {
+      //     if (projection === '360_LR') {
+      //       uvs[ i ][ j ].x *= 0.5;
+      //     } else {
+      //       uvs[ i ][ j ].y *= 0.5;
+      //       uvs[ i ][ j ].y += 0.5;
+      //     }
+      //   }
+      // }
 
-      for (let i = 0; i < uvs.length; i++) {
-        for (let j = 0; j < 3; j++) {
-          if (projection === '360_LR') {
-            uvs[ i ][ j ].x *= 0.5;
-          } else {
-            uvs[ i ][ j ].y *= 0.5;
-            uvs[ i ][ j ].y += 0.5;
-          }
-        }
-      }
-
-      this.movieGeometry = new THREE.BufferGeometry().fromGeometry(geometry);
+      this.movieGeometry = new THREE.SphereBufferGeometry(256, this.options_.sphereDetail, this.options_.sphereDetail);
       this.movieMaterial = new THREE.MeshBasicMaterial({ map: this.videoTexture, overdraw: true, side: THREE.BackSide });
 
       this.movieScreen = new THREE.Mesh(this.movieGeometry, this.movieMaterial);
@@ -188,7 +192,7 @@ class VR extends Plugin {
         }
       }
 
-      this.movieGeometry = new THREE.BufferGeometry().fromGeometry(geometry);
+      this.movieGeometry = new THREE.SphereBufferGeometry(256, this.options_.sphereDetail, this.options_.sphereDetail);
       this.movieMaterial = new THREE.MeshBasicMaterial({ map: this.videoTexture, overdraw: true, side: THREE.BackSide });
 
       this.movieScreen = new THREE.Mesh(this.movieGeometry, this.movieMaterial);
@@ -234,27 +238,26 @@ class VR extends Plugin {
 
       this.scene.add(this.movieScreen);
     } else if (projection === '180' || projection === '180_LR' || projection === '180_MONO') {
-      let geometry = new THREE.SphereGeometry(
+      let geometry = new THREE.SphereBufferGeometry(
         256,
         this.options_.sphereDetail,
         this.options_.sphereDetail,
         Math.PI,
         Math.PI
       );
+      let uvAttribute;
 
       // Left eye view
-      geometry.scale(-1, 1, 1);
-      let uvs = geometry.faceVertexUvs[0];
+      // geometry.scale(-1, 1, 1);
 
-      if (projection !== '180_MONO') {
-        for (let i = 0; i < uvs.length; i++) {
-          for (let j = 0; j < 3; j++) {
-            uvs[i][j].x *= 0.5;
-          }
+      uvAttribute = geometry.getAttribute("uv");
+      if (projection === '180_MONO') {
+        for (let i = 0; i < uvAttribute.count; i++) {
+          uvAttribute.setX(i, uvAttribute.getX(i) * 0.5);
         }
       }
 
-      this.movieGeometry = new THREE.BufferGeometry().fromGeometry(geometry);
+      this.movieGeometry = geometry
       this.movieMaterial = new THREE.MeshBasicMaterial({
         map: this.videoTexture,
         overdraw: true
@@ -265,32 +268,29 @@ class VR extends Plugin {
       this.scene.add(this.movieScreen);
 
       // Right eye view
-      geometry = new THREE.SphereGeometry(
-        256,
-        this.options_.sphereDetail,
-        this.options_.sphereDetail,
-        Math.PI,
-        Math.PI
-      );
-      geometry.scale(-1, 1, 1);
-      uvs = geometry.faceVertexUvs[0];
+      // geometry = new THREE.SphereBufferGeometry(
+      //   256,
+      //   this.options_.sphereDetail,
+      //   this.options_.sphereDetail,
+      //   Math.PI,
+      //   Math.PI
+      // );
+      // geometry.scale(-1, 1, 1);
+       
+      // uvAttribute = geometry.getAttribute("uv");
+      // for (let i = 0; i < uvAttribute.count; i++) {
+      //   uvAttribute.setX(i, uvAttribute.getX(i) * 0.5 + 0.5);
+      // }
 
-      for (let i = 0; i < uvs.length; i++) {
-        for (let j = 0; j < 3; j++) {
-          uvs[i][j].x *= 0.5;
-          uvs[i][j].x += 0.5;
-        }
-      }
-
-      this.movieGeometry = new THREE.BufferGeometry().fromGeometry(geometry);
-      this.movieMaterial = new THREE.MeshBasicMaterial({
-        map: this.videoTexture,
-        overdraw: true
-      });
-      this.movieScreen = new THREE.Mesh(this.movieGeometry, this.movieMaterial);
-      // display in right eye only
-      this.movieScreen.layers.set(2);
-      this.scene.add(this.movieScreen);
+      // this.movieGeometry = geometry
+      // this.movieMaterial = new THREE.MeshBasicMaterial({
+      //   map: this.videoTexture,
+      //   overdraw: true
+      // });
+      // this.movieScreen = new THREE.Mesh(this.movieGeometry, this.movieMaterial);
+      // // display in right eye only
+      // this.movieScreen.layers.set(2);
+      // this.scene.add(this.movieScreen);
     } else if (projection === 'EAC' || projection === 'EAC_LR') {
       const makeScreen = (mapMatrix, scaleMatrix) => {
         // "Continuity correction?": because of discontinuous faces and aliasing,
@@ -620,7 +620,7 @@ void main() {
       this.camera.layers.enable(1);
     }
 
-    this.scene = new THREE.Scene();
+    this.scene = new THREE.Scene()
     this.videoTexture = new THREE.VideoTexture(this.getVideoEl_());
 
     // shared regardless of wether VideoTexture is used or
@@ -639,8 +639,8 @@ void main() {
     }
 
     this.player_.removeChild('BigPlayButton');
-    this.player_.addChild('BigVrPlayButton', {}, this.bigPlayButtonIndex_);
-    this.player_.bigPlayButton = this.player_.getChild('BigVrPlayButton');
+    // this.player_.addChild('BigVrPlayButton', {}, this.bigPlayButtonIndex_);
+    // this.player_.bigPlayButton = this.player_.getChild('BigVrPlayButton');
 
     // mobile devices, or cardboard forced to on
     if (this.options_.forceCardboard ||
@@ -764,6 +764,8 @@ void main() {
 
     this.initialized_ = true;
     this.trigger('initialized');
+
+    console.log(this.scene)
   }
 
   addCardboardButton_() {
