@@ -23,7 +23,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/videojs/videojs-vr"
+    "url": "https://github.com/up360inc/videojs-vr.git"
   },
   "main": "dist/videojs-vr.cjs.js",
   "module": "dist/videojs-vr.es.js",
