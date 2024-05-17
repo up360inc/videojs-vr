@@ -2,24 +2,6 @@
   "name": "videojs-vr",
   "version": "2.0.0",
   "description": "A plugin to add 360 and VR video support to video.js.",
-  "author": {
-    "name": "James Broberg",
-    "email": "james.broberg@metacdn.com"
-  },
-  "contributors": [
-    {
-      "name": "Sean Lawrence",
-      "email": "lawrensm@gmail.com"
-    },
-    {
-      "name": "Mitchell Trent",
-      "email": "mitch@tofi.com.au"
-    },
-    {
-      "name": "Brandon Casey",
-      "email": "branonocasey@gmail.com"
-    }
-  ],
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -31,7 +13,6 @@
     "version": "7.7.3"
   },
   "scripts": {
-    "netlify": "npm run build && node scripts/netlify.js",
     "build-test": "cross-env-shell TEST_BUNDLE_ONLY=1 'npm run build'",
     "build-prod": "cross-env-shell NO_TEST_BUNDLE=1 'npm run build'",
     "build": "npm-run-all -s clean -p build:*",
