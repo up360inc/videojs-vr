@@ -1,5 +1,5 @@
 {
-  "name": "videojs-vr",
+  "name": "@up360inc/videojs-vr",
   "version": "2.0.0",
   "description": "A plugin to add 360 and VR video support to video.js.",
   "license": "MIT",
